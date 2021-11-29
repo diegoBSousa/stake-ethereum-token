@@ -20,6 +20,9 @@ contract TokenFarm {
 
     // 1. Stakes Tokens (Deposit)
     function stakeTokens(uint256 _amount) public {
+        // Require amount greater than 0
+        require(_amount > 0, "Amount must be greater than zero.");
+
         // Transfer Mock Dai tokens to this contract for staking
         daiToken.transferFrom(msg.sender, address(this), _amount);
 
