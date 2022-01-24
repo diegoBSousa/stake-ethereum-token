@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
-import Navbar from './Navbar'
 import Web3 from 'web3'
+import DaiToken from '../abis/DaiToken.json'
+import Navbar from './Navbar'
 import './App.css'
 
 class App extends Component {
@@ -32,6 +33,18 @@ class App extends Component {
 
     const networkId = await web3.eth.net.getId()
     console.log(networkId)
+
+    // Load DaiToken
+    const daiTokenData = DaiToken.networks[networkId]
+    if (daiTokenData) {
+      const daiToken = new web3.eth.Contract(DaiToken.abi, daiTokenData.address)
+      this.setState({ daiToken })
+      let daiTokenBalance = await daiToken.methods.balanceOf(this.state.account).call()
+      this.setState({ daiTokenBalance: daiTokenBalance.toString() })
+      console.log({ balance: daiTokenBalance })
+    } else {
+      window.alert('DaiToken contract not deployed to detect network.')
+    }
   }
 
   async loadWeb3() {
