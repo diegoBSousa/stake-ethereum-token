@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Web3 from 'web3'
 import DaiToken from '../abis/DaiToken.json'
 import DappToken from '../abis/DappToken.json'
+import TokenFarm from '../abis/TokenFarm.json'
 import Navbar from './Navbar'
 import './App.css'
 
@@ -33,7 +34,6 @@ class App extends Component {
     this.setState({ account: accounts[0] })
 
     const networkId = await web3.eth.net.getId()
-    console.log(networkId)
 
     // Load DaiToken
     const daiTokenData = DaiToken.networks[networkId]
@@ -42,7 +42,6 @@ class App extends Component {
       this.setState({ daiToken })
       let daiTokenBalance = await daiToken.methods.balanceOf(this.state.account).call()
       this.setState({ daiTokenBalance: daiTokenBalance.toString() })
-      console.log({ balance: daiTokenBalance })
     } else {
       window.alert('DaiToken contract not deployed to detect network.')
     }
@@ -56,6 +55,17 @@ class App extends Component {
       this.setState({ dappTokenBalance: dappTokenBalance.toString() })
     } else {
       window.alert('DappToken contract not deployed to detect network.')
+    }
+
+    // Load TokenFarm
+    const tokenFarmData = TokenFarm.networks[networkId]
+    if (tokenFarmData) {
+      const tokenFarm = new web3.eth.Contract(TokenFarm.abi, tokenFarmData.address)
+      this.setState({ tokenFarm })
+      let stakingBalance = await tokenFarm.methods.stakingBalance(this.state.account).call()
+      this.setState({ stakingBalance: stakingBalance.toString() })
+    } else {
+      window.alert('TokenFarm contract not deployed to detected network.')
     }
   }
 
